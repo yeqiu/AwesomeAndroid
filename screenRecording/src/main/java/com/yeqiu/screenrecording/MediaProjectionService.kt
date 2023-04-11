@@ -2,7 +2,6 @@ package com.yeqiu.screenrecording
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -96,11 +95,10 @@ class MediaProjectionService : Service() {
     }
 
 
-    private fun showNotification(
-        notification: Notification = NotificationHelper().create(
-            ScreenRecordingHelper.getInstance().getContext()
-        )
-    ) {
+    private fun showNotification() {
+
+        val notification =
+            NotificationHelper.getNotification(ScreenRecordingHelper.getInstance().getContext())
         //设置为前台
         startForeground(100, notification)
     }
@@ -120,14 +118,22 @@ class MediaProjectionService : Service() {
             //以下调用顺序不能乱
             mediaRecorder = MediaRecorder()
             val context = ScreenRecordingHelper.getInstance().getContext()
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.RECORD_AUDIO
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
                 mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
             }
             mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE)
             mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             mediaRecorder.setOutputFile(mediaFile.absolutePath)
             mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.RECORD_AUDIO
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
                 mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
             }
             mediaRecorder.setVideoSize(width, height)

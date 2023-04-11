@@ -1,6 +1,7 @@
 package com.yeqiu.screenrecording
 
 import android.app.Activity
+import android.app.Notification
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -95,8 +96,14 @@ class ScreenRecordingHelper {
         MediaProjectionService.bindService(activity, serviceConnection)
         displayMetrics = DisplayMetrics()
         activity.windowManager.defaultDisplay.getRealMetrics(displayMetrics)
+    }
+
+    fun setNotification(notification: Notification){
+
+        NotificationHelper.setNotification(notification)
 
     }
+
 
     fun setOnScreenRecordingCallBack(onScreenRecordingCallBack: OnScreenRecordingCallBack) {
         this@ScreenRecordingHelper.onScreenRecordingCallBack = onScreenRecordingCallBack

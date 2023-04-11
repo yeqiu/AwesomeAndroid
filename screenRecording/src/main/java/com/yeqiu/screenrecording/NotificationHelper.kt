@@ -10,10 +10,26 @@ import androidx.core.app.NotificationCompat
 
 class NotificationHelper {
 
+    companion object {
+
+        private lateinit var notification: Notification
+
+        fun setNotification(notification: Notification) {
+            this@Companion.notification = notification
+        }
+
+        fun getNotification(context: Context): Notification {
+            return if (::notification.isInitialized) {
+                notification
+            } else {
+                NotificationHelper().create(context)
+            }
+        }
+    }
+
     private val channelName = "录屏通知"
 
-
-    fun create(context: Context, icon: Int = R.drawable.icon_app): Notification {
+    fun create(context: Context): Notification {
 
         //创建通知渠道
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -35,8 +51,6 @@ class NotificationHelper {
         return NotificationCompat.Builder(context, channelName)
             .setContentTitle(appName)
             .setWhen(System.currentTimeMillis())
-            .setSmallIcon(icon)
-            .setOngoing(true)
             .setContentText("屏幕录制服务开启")
             .build()
     }
