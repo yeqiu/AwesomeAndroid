@@ -1,0 +1,61 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+def cfg = rootProject.ext
+
+android {
+    namespace cfg.applicationid.screenrecording
+    compileSdk cfg.android.compileSdk
+
+    defaultConfig {
+        minSdk cfg.android.minSdk
+        targetSdk cfg.android.targetSdk
+        versionCode cfg.android.versionCode
+        versionName cfg.android.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = cfg.kotlin.jvmTarget
+    }
+    viewBinding {
+        enabled = cfg.android.viewBinding
+    }
+    
+    //生成jar包
+    task exportJar(type: Copy) {
+        delete 'build/outputs/libs/screenRecordingHelper.jar'
+        from('build/intermediates/compile_library_classes_jar/release/') //jar文件来源
+        into('build/outputs/libs/') //生成路径
+        include('classes.jar')
+        rename('classes.jar', 'screenRecordingHelper.jar') //命名
+    }
+    exportJar.dependsOn(build)
+
+}
+
+dependencies {
+
+    implementation cfg.dependencies.androidxAppcompat
+    implementation cfg.dependencies.ktx
+    testImplementation cfg.dependencies.junit
+    androidTestImplementation cfg.dependencies.androidxJunit
+    androidTestImplementation cfg.dependencies.espresso
+}
+

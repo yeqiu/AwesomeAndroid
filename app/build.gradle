@@ -1,0 +1,56 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+def cfg = rootProject.ext
+
+android {
+
+    namespace cfg.applicationid.app
+    compileSdk cfg.android.compileSdk
+
+    defaultConfig {
+        applicationId cfg.applicationid.app
+        minSdk cfg.android.minSdk
+        targetSdk cfg.android.targetSdk
+        versionCode cfg.android.versionCode
+        versionName cfg.android.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = cfg.kotlin.jvmTarget
+    }
+    viewBinding {
+        enabled = cfg.android.viewBinding
+    }
+}
+
+dependencies {
+
+    implementation cfg.dependencies.androidxAppcompat
+    implementation cfg.dependencies.ktx
+    implementation cfg.dependencies.material
+    implementation cfg.dependencies.constraintlayout
+    implementation cfg.dependencies.splashscreen
+    implementation cfg.dependencies.multidex
+    implementation project(path: ':common')
+    implementation project(path: ':screenRecording')
+//    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    testImplementation cfg.dependencies.junit
+    androidTestImplementation cfg.dependencies.androidxJunit
+    androidTestImplementation cfg.dependencies.espresso
+
+}
