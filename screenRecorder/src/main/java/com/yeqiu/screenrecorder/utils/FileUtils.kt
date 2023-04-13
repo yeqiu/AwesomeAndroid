@@ -1,4 +1,4 @@
-package com.yeqiu.screenrecording.utils
+package com.yeqiu.screenrecorder.utils
 
 import android.content.Context
 import android.os.Environment
@@ -26,7 +26,7 @@ internal fun getScreenshotFilePath(context: Context): String {
 
 private fun getDataStr(time: Long): String {
 
-    val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+    val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
     val date = Date(time)
     return simpleDateFormat.format(date)
 

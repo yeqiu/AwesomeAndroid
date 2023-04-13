@@ -1,8 +1,8 @@
-package com.yeqiu.screenrecording
+package com.yeqiu.screenrecorder
 
 import java.io.File
 
-open class OnScreenRecordingCallBack {
+open class OnScreenRecordCallBack {
 
     companion object {
         const val actionVideo: Int = 1
@@ -10,7 +10,7 @@ open class OnScreenRecordingCallBack {
     }
 
 
-    open fun onRecordingStatusChange(status: ScreenRecordingHelper.ScreenRecordingStatus) {
+    open fun onRecordingStatusChange(status: ScreenRecorderHelper.ScreenRecordingStatus) {
 
 
     }

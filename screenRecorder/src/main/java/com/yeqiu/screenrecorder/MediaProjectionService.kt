@@ -1,4 +1,4 @@
-package com.yeqiu.screenrecording
+package com.yeqiu.screenrecorder
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -20,7 +20,7 @@ import android.os.IBinder
 import android.os.SystemClock
 import android.util.DisplayMetrics
 import androidx.core.content.ContextCompat
-import com.yeqiu.screenrecording.utils.log
+import com.yeqiu.screenrecorder.utils.log
 import java.io.File
 import java.io.FileOutputStream
 
@@ -67,7 +67,7 @@ class MediaProjectionService : Service() {
 
     override fun onBind(intent: Intent?): IBinder {
         log("onBind")
-        updateStatus(ScreenRecordingHelper.ScreenRecordingStatus.Idle)
+        updateStatus(ScreenRecorderHelper.ScreenRecordingStatus.Idle)
         return MediaProjectionBinder()
     }
 
@@ -86,9 +86,9 @@ class MediaProjectionService : Service() {
         //准备录屏资源
         mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data)
         //更新状态
-        updateStatus(ScreenRecordingHelper.ScreenRecordingStatus.Prepare)
+        updateStatus(ScreenRecorderHelper.ScreenRecordingStatus.Prepare)
 
-        if (ScreenRecordingHelper.getInstance().getEnableScreenCapture()) {
+        if (ScreenRecorderHelper.getInstance().getEnableScreenCapture()) {
             createImageReader()
         }
 
@@ -98,7 +98,7 @@ class MediaProjectionService : Service() {
     private fun showNotification() {
 
         val notification =
-            NotificationHelper.getNotification(ScreenRecordingHelper.getInstance().getContext())
+            NotificationHelper.getNotification(ScreenRecorderHelper.getInstance().getContext())
         //设置为前台
         startForeground(100, notification)
     }
@@ -106,8 +106,8 @@ class MediaProjectionService : Service() {
     fun startRecording(path: String) {
 
 
-        if (ScreenRecordingHelper.getInstance()
-                .getStatus() == ScreenRecordingHelper.ScreenRecordingStatus.Prepare
+        if (ScreenRecorderHelper.getInstance()
+                .getStatus() == ScreenRecorderHelper.ScreenRecordingStatus.Prepare
         ) {
             val width = displayMetrics.widthPixels
             val height = displayMetrics.heightPixels
@@ -117,7 +117,7 @@ class MediaProjectionService : Service() {
             log("mediaFile = ${mediaFile.absolutePath}")
             //以下调用顺序不能乱
             mediaRecorder = MediaRecorder()
-            val context = ScreenRecordingHelper.getInstance().getContext()
+            val context = ScreenRecorderHelper.getInstance().getContext()
             if (ContextCompat.checkSelfPermission(
                     context,
                     Manifest.permission.RECORD_AUDIO
@@ -141,8 +141,8 @@ class MediaProjectionService : Service() {
             mediaRecorder.setVideoEncodingBitRate(5 * width * height)
             mediaRecorder.setOnErrorListener { _, _, _ ->
                 log("录屏服务发生错误")
-                ScreenRecordingHelper.getInstance().getOnScreenRecordingCallBack()
-                    .onError(OnScreenRecordingCallBack.actionVideo, "录屏服务发生错误")
+                ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
+                    .onError(OnScreenRecordCallBack.actionVideo, "录屏服务发生错误")
             }
             mediaRecorder.prepare()
 
@@ -157,13 +157,13 @@ class MediaProjectionService : Service() {
             }
             mediaRecorder.start()
             //更新状态
-            updateStatus(ScreenRecordingHelper.ScreenRecordingStatus.Recording)
-        } else if (ScreenRecordingHelper.getInstance()
-                .getStatus() == ScreenRecordingHelper.ScreenRecordingStatus.Pause
+            updateStatus(ScreenRecorderHelper.ScreenRecordingStatus.Recording)
+        } else if (ScreenRecorderHelper.getInstance()
+                .getStatus() == ScreenRecorderHelper.ScreenRecordingStatus.Pause
         ) {
             mediaRecorder.resume()
         }
-        updateStatus(ScreenRecordingHelper.ScreenRecordingStatus.Recording)
+        updateStatus(ScreenRecorderHelper.ScreenRecordingStatus.Recording)
     }
 
 
@@ -172,7 +172,7 @@ class MediaProjectionService : Service() {
         if (::mediaRecorder.isInitialized) {
             mediaRecorder.pause()
         }
-        updateStatus(ScreenRecordingHelper.ScreenRecordingStatus.Pause)
+        updateStatus(ScreenRecorderHelper.ScreenRecordingStatus.Pause)
 
     }
 
@@ -205,7 +205,7 @@ class MediaProjectionService : Service() {
             createImageReader()
         }
 
-        updateStatus(ScreenRecordingHelper.ScreenRecordingStatus.Screenshotting)
+        updateStatus(ScreenRecorderHelper.ScreenRecordingStatus.Screenshotting)
 
         var image = imageReader.acquireLatestImage()
         if (image == null) {
@@ -216,8 +216,8 @@ class MediaProjectionService : Service() {
         }
 
         if (image == null) {
-            ScreenRecordingHelper.getInstance().getOnScreenRecordingCallBack()
-                .onError(OnScreenRecordingCallBack.actionImage, "截屏失败")
+            ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
+                .onError(OnScreenRecordCallBack.actionImage, "截屏失败")
             return
         }
 
@@ -250,27 +250,27 @@ class MediaProjectionService : Service() {
             val fileOutputStream = FileOutputStream(file)
             bitmap.compress(Bitmap.CompressFormat.WEBP, 100, fileOutputStream)
             fileOutputStream.flush()
-            ScreenRecordingHelper.getInstance().getOnScreenRecordingCallBack()
+            ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
                 .onScreenshotResult(file)
-            ScreenRecordingHelper.getInstance().getOnScreenRecordingCallBack()
+            ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
                 .onScreenshotResult(file)
         } catch (exception: Exception) {
             exception.printStackTrace()
-            ScreenRecordingHelper.getInstance().getOnScreenRecordingCallBack()
-                .onError(OnScreenRecordingCallBack.actionImage, "保存截图失败")
+            ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
+                .onError(OnScreenRecordCallBack.actionImage, "保存截图失败")
         } finally {
             //恢复状态
-            updateStatus(ScreenRecordingHelper.ScreenRecordingStatus.Prepare)
+            updateStatus(ScreenRecorderHelper.ScreenRecordingStatus.Prepare)
         }
 
 
     }
 
-    private fun updateStatus(status: ScreenRecordingHelper.ScreenRecordingStatus) {
-        ScreenRecordingHelper.getInstance()
+    private fun updateStatus(status: ScreenRecorderHelper.ScreenRecordingStatus) {
+        ScreenRecorderHelper.getInstance()
             .setStatus(status)
         //回调状态
-        ScreenRecordingHelper.getInstance().getOnScreenRecordingCallBack()
+        ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
             .onRecordingStatusChange(status)
     }
 
@@ -284,8 +284,8 @@ class MediaProjectionService : Service() {
         }
 
 
-        updateStatus(ScreenRecordingHelper.ScreenRecordingStatus.Prepare)
-        ScreenRecordingHelper.getInstance().getOnScreenRecordingCallBack()
+        updateStatus(ScreenRecorderHelper.ScreenRecordingStatus.Prepare)
+        ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
             .onRecordingStatusResult(mediaFile)
     }
 
@@ -304,7 +304,7 @@ class MediaProjectionService : Service() {
         }
 
 
-        updateStatus(ScreenRecordingHelper.ScreenRecordingStatus.Idle)
+        updateStatus(ScreenRecorderHelper.ScreenRecordingStatus.Idle)
     }
 
 

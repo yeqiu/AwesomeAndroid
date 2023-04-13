@@ -1,4 +1,4 @@
-package com.yeqiu.screenrecording
+package com.yeqiu.screenrecorder
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -15,11 +15,11 @@ class NotificationHelper {
         private lateinit var notification: Notification
 
         fun setNotification(notification: Notification) {
-            this@Companion.notification = notification
+            Companion.notification = notification
         }
 
         fun getNotification(context: Context): Notification {
-            return if (::notification.isInitialized) {
+            return if (Companion::notification.isInitialized) {
                 notification
             } else {
                 NotificationHelper().create(context)

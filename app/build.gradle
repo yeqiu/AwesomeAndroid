@@ -47,8 +47,8 @@ dependencies {
     implementation cfg.dependencies.splashscreen
     implementation cfg.dependencies.multidex
     implementation project(path: ':common')
-    implementation project(path: ':screenRecording')
-//    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation project(path: ':screenRecorder')
+    //    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     testImplementation cfg.dependencies.junit
     androidTestImplementation cfg.dependencies.androidxJunit
     androidTestImplementation cfg.dependencies.espresso

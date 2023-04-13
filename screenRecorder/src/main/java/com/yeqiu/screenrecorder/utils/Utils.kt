@@ -1,4 +1,4 @@
-package com.yeqiu.screenrecording.utils
+package com.yeqiu.screenrecorder.utils
 
 import android.content.Context
 import android.util.Log

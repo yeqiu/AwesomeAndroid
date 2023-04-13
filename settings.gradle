@@ -26,4 +26,4 @@ dependencyResolutionManagement {
 rootProject.name = "AwesomeAndroid"
 include ':app'
 include ':common'
-include ':screenRecording'
+include ':screenRecorder'

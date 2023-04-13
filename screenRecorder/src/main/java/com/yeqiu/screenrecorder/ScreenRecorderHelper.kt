@@ -1,4 +1,4 @@
-package com.yeqiu.screenrecording
+package com.yeqiu.screenrecorder
 
 import android.app.Activity
 import android.app.Notification
@@ -12,11 +12,11 @@ import android.util.DisplayMetrics
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import com.yeqiu.screenrecording.utils.getScreenRecordingFilePath
-import com.yeqiu.screenrecording.utils.getScreenshotFilePath
-import com.yeqiu.screenrecording.utils.log
+import com.yeqiu.screenrecorder.utils.getScreenRecordingFilePath
+import com.yeqiu.screenrecorder.utils.getScreenshotFilePath
+import com.yeqiu.screenrecorder.utils.log
 
-class ScreenRecordingHelper {
+class ScreenRecorderHelper {
 
     enum class ScreenRecordingStatus {
         Idle, Prepare, Recording, Pause, Screenshotting;
@@ -27,7 +27,7 @@ class ScreenRecordingHelper {
     private lateinit var recordingPermissionLauncher: ActivityResultLauncher<Intent>
     private lateinit var mediaProjectionService: MediaProjectionService
     private lateinit var displayMetrics: DisplayMetrics
-    private lateinit var onScreenRecordingCallBack: OnScreenRecordingCallBack
+    private lateinit var onScreenRecordCallBack: OnScreenRecordCallBack
     private var enableScreenCapture: Boolean = false
 
 
@@ -53,11 +53,11 @@ class ScreenRecordingHelper {
 
 
     companion object {
-        private val screenRecordingHelper = ScreenRecordingHelper()
+        private val screenRecorderHelper = ScreenRecorderHelper()
 
         @JvmStatic
-        fun getInstance(): ScreenRecordingHelper {
-            return screenRecordingHelper
+        fun getInstance(): ScreenRecorderHelper {
+            return screenRecorderHelper
         }
     }
 
@@ -67,15 +67,15 @@ class ScreenRecordingHelper {
     }
 
     internal fun setStatus(status: ScreenRecordingStatus) {
-        this@ScreenRecordingHelper.status = status
+        this@ScreenRecorderHelper.status = status
     }
 
-    internal fun getOnScreenRecordingCallBack(): OnScreenRecordingCallBack {
+    internal fun getOnScreenRecordingCallBack(): OnScreenRecordCallBack {
 
-        return if (::onScreenRecordingCallBack.isInitialized) {
-            onScreenRecordingCallBack
+        return if (::onScreenRecordCallBack.isInitialized) {
+            onScreenRecordCallBack
         } else {
-            object : OnScreenRecordingCallBack() {
+            object : OnScreenRecordCallBack() {
             }
         }
     }
@@ -89,7 +89,7 @@ class ScreenRecordingHelper {
      */
     fun init(activity: ComponentActivity) {
 
-        this@ScreenRecordingHelper.activity = activity
+        this@ScreenRecorderHelper.activity = activity
         //创建录屏请求launch
         recordingPermissionLauncher = createRecordingPermissionResult(activity)
         //绑定服务
@@ -105,8 +105,8 @@ class ScreenRecordingHelper {
     }
 
 
-    fun setOnScreenRecordingCallBack(onScreenRecordingCallBack: OnScreenRecordingCallBack) {
-        this@ScreenRecordingHelper.onScreenRecordingCallBack = onScreenRecordingCallBack
+    fun setOnScreenRecordingCallBack(onScreenRecordCallBack: OnScreenRecordCallBack) {
+        this@ScreenRecorderHelper.onScreenRecordCallBack = onScreenRecordCallBack
     }
 
     fun getStatus(): ScreenRecordingStatus {
@@ -140,7 +140,7 @@ class ScreenRecordingHelper {
             val mediaProjectionManager =
                 activity.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
             recordingPermissionLauncher.launch(mediaProjectionManager.createScreenCaptureIntent())
-            this@ScreenRecordingHelper.enableScreenCapture = enableScreenCapture
+            this@ScreenRecorderHelper.enableScreenCapture = enableScreenCapture
         } else {
             log("未初始化")
         }

@@ -2,23 +2,23 @@ package com.yeqiu.awesomeandroid;
 
 import androidx.activity.ComponentActivity;
 
-import com.yeqiu.screenrecording.ScreenRecordingHelper;
+import com.yeqiu.screenrecorder.ScreenRecorderHelper;
 
 public class Test {
 
 
     public void init(ComponentActivity activity){
-        ScreenRecordingHelper.getInstance().init(activity);
+        ScreenRecorderHelper.getInstance().init(activity);
     }
 
     public void prepare(){
-        ScreenRecordingHelper.getInstance().prepare(true);
+        ScreenRecorderHelper.getInstance().prepare(true);
     }
 
     public void start(){
-        ScreenRecordingHelper.getInstance().startRecording();
-        ScreenRecordingHelper.getInstance().pauseRecording();
-        ScreenRecordingHelper.getInstance().stopRecording();
-        ScreenRecordingHelper.getInstance().screenshot();
+        ScreenRecorderHelper.getInstance().startRecording();
+        ScreenRecorderHelper.getInstance().pauseRecording();
+        ScreenRecorderHelper.getInstance().stopRecording();
+        ScreenRecorderHelper.getInstance().screenshot();
     }
 }
