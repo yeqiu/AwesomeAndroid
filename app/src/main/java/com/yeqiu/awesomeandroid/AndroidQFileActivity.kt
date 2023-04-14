@@ -21,9 +21,6 @@ class AndroidQFileActivity : BaseBindActivity<ActivityAndroidQFileBinding>(), Vi
         binding.btGet.setOnClickListener(this)
 
 
-
-
-
     }
 
     override fun onClick(view: View?) {
@@ -118,6 +115,15 @@ class AndroidQFileActivity : BaseBindActivity<ActivityAndroidQFileBinding>(), Vi
         } else {
             // 文件不存在，需要处理异常情况
             log("file == null")
+        }
+
+
+        val files = DownloadFolderFileUtil.getAllFiles(this)
+        log("files = ${files.size}")
+
+        for (file in files){
+
+            log("name = ${ file.name}")
         }
 
 

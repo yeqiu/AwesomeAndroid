@@ -105,7 +105,6 @@ class MediaProjectionService : Service() {
 
     fun startRecording(path: String) {
 
-
         if (ScreenRecorderHelper.getInstance()
                 .getStatus() == ScreenRecorderHelper.ScreenRecordingStatus.Prepare
         ) {
@@ -114,7 +113,6 @@ class MediaProjectionService : Service() {
             val dpi = displayMetrics.densityDpi
             //录屏文件
             mediaFile = File(path)
-            log("mediaFile = ${mediaFile.absolutePath}")
             //以下调用顺序不能乱
             mediaRecorder = MediaRecorder()
             val context = ScreenRecorderHelper.getInstance().getContext()
@@ -274,20 +272,17 @@ class MediaProjectionService : Service() {
             .onRecordingStatusChange(status)
     }
 
-
     fun stopRecording() {
-
         if (::mediaRecorder.isInitialized) {
             mediaRecorder.stop()
             mediaRecorder.reset()
             mediaRecorder.release()
         }
-
-
         updateStatus(ScreenRecorderHelper.ScreenRecordingStatus.Prepare)
         ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
             .onRecordingStatusResult(mediaFile)
     }
+
 
     fun release() {
 

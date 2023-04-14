@@ -13,7 +13,7 @@ import java.io.*
 @RequiresApi(Build.VERSION_CODES.Q)
 object DownloadFolderFileUtil {
 
-    private val downloadsPath = Environment.DIRECTORY_DOWNLOADS
+    private val downloadsFolderName = Environment.DIRECTORY_DOWNLOADS
     private const val displayName = MediaStore.Downloads.DISPLAY_NAME
     private const val id = MediaStore.Downloads._ID
     private const val mimeType = MediaStore.Downloads.MIME_TYPE
@@ -23,7 +23,7 @@ object DownloadFolderFileUtil {
     private val downloadsUri by lazy {
         MediaStore.Downloads.EXTERNAL_CONTENT_URI
     }
-    private val downloadsDri by lazy {
+    private val downloadsDriPath by lazy {
         Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS
         ).absolutePath
@@ -114,6 +114,46 @@ object DownloadFolderFileUtil {
     }
 
 
+    fun getAllFiles(context: Context): ArrayList<File> {
+
+        val fileList = arrayListOf<File>()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val queryUri = MediaStore.Downloads.EXTERNAL_CONTENT_URI
+            val projection = arrayOf(id, displayName, relativePath)
+            val sortOrder = "${MediaStore.Downloads.DATE_MODIFIED} DESC"
+            val cursor =
+                context.contentResolver.query(queryUri, projection, null, null, sortOrder)
+
+            cursor?.apply {
+                if (moveToNext()) {
+                    val name = getString(getColumnIndexOrThrow(displayName))
+                    val downloadDir =
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    val file = File(downloadDir, name)
+                    if (file.exists()) {
+                        fileList.add(file)
+                    }
+
+                }
+                cursor.close()
+            }
+        } else {
+            val file = File(downloadsDriPath)
+            if (file.isDirectory) {
+                val listFiles = file.listFiles()
+                listFiles?.apply {
+                    for (file in this){
+                        file?.let {
+                            fileList.add(it)
+                        }
+                    }
+                }
+            }
+        }
+        return fileList
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun addFileAfterQ(context: Context, fileName: String, fileContent: ByteArray): Uri? {
 
@@ -123,7 +163,7 @@ object DownloadFolderFileUtil {
         val values = ContentValues().apply {
             put(displayName, fileName)
             put(mimeType, getMimeType(fileName))
-            put(relativePath, downloadsPath)
+            put(relativePath, downloadsFolderName)
         }
         val resolver = context.contentResolver
 
@@ -154,7 +194,7 @@ object DownloadFolderFileUtil {
 
         var fileOutputStream: FileOutputStream? = null
         try {
-            val file = File(downloadsDri, fileName)
+            val file = File(downloadsDriPath, fileName)
             if (file.exists()) {
                 getFileBeforeQ(fileName)?.delete()
             } else {
@@ -208,7 +248,7 @@ object DownloadFolderFileUtil {
 
     private fun getFileBeforeQ(fileName: String): File? {
 
-        val file = File(downloadsDri, fileName)
+        val file = File(downloadsDriPath, fileName)
 
 
         return if (file.exists()) {
@@ -243,7 +283,6 @@ object DownloadFolderFileUtil {
                 if (file.exists()) {
                     qFile = QFile(uri, id, file.absolutePath, name, file)
                 }
-
             }
             cursor.close()
         }
@@ -302,9 +341,7 @@ object DownloadFolderFileUtil {
                     reader?.close()
                 }
             }
-
         }
-
         return fileContent
     }
 
