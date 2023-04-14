@@ -17,9 +17,10 @@ ext {
 
     //model id
     applicationid = [
-            app: "com.yeqiu.awesomeandroid",
+            app: "com.yeqiu.awesomeandroid.app",
             common: "com.yeqiu.common",
             screenrecording: "com.yeqiu.screenrecording",
+            awesomeandroid: "com.yeqiu.awesomeandroid",
     ]
 
     //官方依赖
