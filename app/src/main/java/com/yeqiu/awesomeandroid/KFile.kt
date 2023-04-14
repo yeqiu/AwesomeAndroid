@@ -1,5 +1,6 @@
 package com.yeqiu.awesomeandroid
 
+import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
@@ -11,13 +12,12 @@ import android.webkit.MimeTypeMap
 import androidx.annotation.RequiresApi
 import com.yeqiu.common.log
 import java.io.*
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 
 object FileUtils {
 
 
-
-
-    @RequiresApi(Build.VERSION_CODES.Q)
     fun addFileToDownloads(
         context: Context,
         fileName: String,
@@ -33,7 +33,9 @@ object FileUtils {
         val resolver = context.contentResolver
         var uri: Uri? = null
         resolver.run {
-            uri = insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                uri = insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+            }
             uri?.let {
                 openOutputStream(it)?.use { outputStream ->
                     outputStream.write(fileContent)
@@ -62,7 +64,8 @@ object FileUtils {
         context: Context,
         fileName: String
     ): File? {
-        val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val downloadDir =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         val queryUri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
         val projection = arrayOf(
             MediaStore.Downloads._ID,
@@ -84,8 +87,9 @@ object FileUtils {
         cursor?.use {
             if (it.moveToFirst()) {
                 val id = it.getLong(it.getColumnIndexOrThrow(MediaStore.Downloads._ID))
-                val path = it.getString(it.getColumnIndexOrThrow(MediaStore.Downloads.RELATIVE_PATH))
-                val file = File(downloadDir,fileName)
+                val path =
+                    it.getString(it.getColumnIndexOrThrow(MediaStore.Downloads.RELATIVE_PATH))
+                val file = File(downloadDir, fileName)
                 val name = it.getString(it.getColumnIndexOrThrow(MediaStore.Downloads.DISPLAY_NAME))
                 if (file.exists()) {
                     return file
@@ -117,7 +121,6 @@ object FileUtils {
     }
 
 
-
     fun updateTxtFileContent(context: Context, fileName: String, content: String) {
 
         val uri = getFileUriByFileName(context, fileName) ?: return
@@ -130,28 +133,58 @@ object FileUtils {
     }
 
 
-
-
     @RequiresApi(Build.VERSION_CODES.Q)
     fun getFileUriByFileName(context: Context, fileName: String): Uri? {
+
+        var result: Uri? = null
+
         val uri = MediaStore.Downloads.EXTERNAL_CONTENT_URI
         val projection = arrayOf(MediaStore.MediaColumns._ID)
         val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ?"
         val selectionArgs = arrayOf(fileName)
+        val cursor = context.contentResolver.query(uri, projection, selection, selectionArgs, null)
 
-        context.contentResolver.query(uri, projection, selection, selectionArgs, null)?.use { cursor ->
+        cursor?.let { cursor ->
             if (cursor.moveToFirst()) {
                 val columnIndex = cursor.getColumnIndex(MediaStore.MediaColumns._ID)
                 log("columnIndex = $columnIndex")
                 val id = cursor.getLong(columnIndex)
-                return Uri.withAppendedPath(uri, id.toString())
+                result = Uri.withAppendedPath(uri, id.toString())
             }
+
+            cursor.close()
         }
 
-        return null
+        return result
     }
 
 
+    fun readFileToString(context: Context, fileName: String): String? {
+
+        val fileUri = getFileUriByFileName(context, fileName)
+        if (fileUri == null) {
+            return ""
+        }
+        var inputStream: InputStream? = null
+        var reader: BufferedReader? = null
+        try {
+            inputStream = context.contentResolver.openInputStream(fileUri!!)
+            reader = BufferedReader(InputStreamReader(inputStream, Charset.forName("UTF-8")))
+            val stringBuilder = StringBuilder()
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                stringBuilder.append(line)
+                stringBuilder.append("\n") // 添加换行符
+            }
+            return stringBuilder.toString()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            reader?.close()
+            inputStream?.close()
+        }
+        return null
+    }
 
 
 }
