@@ -8,21 +8,26 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
 import androidx.annotation.RequiresApi
-import com.yeqiu.common.log
 import java.io.*
 
+@RequiresApi(Build.VERSION_CODES.Q)
 object DownloadFolderFileUtil {
 
     private val downloadsPath = Environment.DIRECTORY_DOWNLOADS
     private const val displayName = MediaStore.Downloads.DISPLAY_NAME
     private const val id = MediaStore.Downloads._ID
     private const val mimeType = MediaStore.Downloads.MIME_TYPE
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private const val relativePath = MediaStore.Downloads.RELATIVE_PATH
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private val downloadsUri = MediaStore.Downloads.EXTERNAL_CONTENT_URI
+    private val relativePath by lazy {
+        MediaStore.Downloads.RELATIVE_PATH
+    }
+    private val downloadsUri by lazy {
+        MediaStore.Downloads.EXTERNAL_CONTENT_URI
+    }
+    private val downloadsDri by lazy {
+        Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_DOWNLOADS
+        ).absolutePath
+    }
 
 
     fun addFile(context: Context, fileName: String, fileContent: ByteArray): Boolean {
@@ -30,15 +35,90 @@ object DownloadFolderFileUtil {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             (addFileAfterQ(context, fileName, fileContent) != null)
         } else {
-            addFileBeforeQ(context, fileName, fileContent)
+            addFileBeforeQ(fileName, fileContent)
         }
     }
 
+    fun getFile(
+        context: Context,
+        fileName: String
+    ): File? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            getFileAfterQ(context, fileName)
+        } else {
+            getFileBeforeQ(fileName)
+        }
+
+    }
+
+    /**
+     * 更新文件内容,完全覆盖
+     * @param context Context
+     * @param fileName String
+     * @param newContent ByteArray
+     */
+    fun updateFile(context: Context, fileName: String, newContent: ByteArray): Boolean {
+
+        var result = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val qFile = getQFileByFileName(context, fileName)
+            qFile?.apply {
+                val outputStream = context.contentResolver.openOutputStream(uri, "wt")
+                try {
+                    outputStream?.apply {
+                        write(newContent)
+                        flush()
+                    }
+                    result = true
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    outputStream?.close()
+                }
+            }
+
+        } else {
+            val file = getFileBeforeQ(fileName)
+            file?.apply {
+                var outputStream: OutputStream? = null
+                try {
+                    outputStream = outputStream()
+                    outputStream.write(newContent)
+                    outputStream.flush()
+                    result = true
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    outputStream?.close()
+                }
+            }
+        }
+        return result
+    }
+
+
+    fun delFile(context: Context, fileName: String): Boolean {
+        var result = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val qFile = getQFileByFileName(context, fileName)
+            qFile?.apply {
+                context.contentResolver.delete(qFile.uri, null, null)
+                result = true
+            }
+        } else {
+            getFileBeforeQ(fileName)?.delete()
+            result = true
+        }
+
+        return result
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun addFileAfterQ(context: Context, fileName: String, fileContent: ByteArray): Uri? {
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return null
-        }
+        //先删除文件
+        delFile(context, fileName)
 
         val values = ContentValues().apply {
             put(displayName, fileName)
@@ -65,15 +145,31 @@ object DownloadFolderFileUtil {
         }
     }
 
-    private fun addFileBeforeQ(context: Context, fileName: String, content: ByteArray): Boolean {
-        log("低版本添加文件")
-        // TODO: 低版本添加文件
-        //权限
+    private fun addFileBeforeQ(
+        fileName: String,
+        fileContent: ByteArray
+    ): Boolean {
 
-        val absolutePath = Environment.getDownloadCacheDirectory().absolutePath
+        var reslut = false
 
+        var fileOutputStream: FileOutputStream? = null
+        try {
+            val file = File(downloadsDri, fileName)
+            if (file.exists()) {
+                getFileBeforeQ(fileName)?.delete()
+            } else {
+                file.createNewFile()
+            }
+            fileOutputStream = FileOutputStream(file)
+            fileOutputStream.write(fileContent)
+            reslut = true
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            fileOutputStream?.close()
+        }
 
-        return false
+        return reslut
 
     }
 
@@ -82,7 +178,7 @@ object DownloadFolderFileUtil {
      * @param fileName String
      * @return String?
      */
-    private fun getMimeType(fileName: String): String? {
+    private fun getMimeType(fileName: String): String {
         var type: String? = null
         val extension = fileName.substringAfterLast(".", "")
         if (extension.isNotEmpty()) {
@@ -100,24 +196,8 @@ object DownloadFolderFileUtil {
     }
 
 
-    fun getFile(
-        context: Context,
-        fileName: String
-    ): File? {
-
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            getFileAfterQ(context, fileName)
-        } else {
-            getFileBeforeQ(context, fileName)
-        }
-
-    }
-
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun getFileAfterQ(context: Context, fileName: String): File? {
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return null
-        }
 
         getQFileByFileName(context, fileName)?.apply {
             return file
@@ -126,17 +206,22 @@ object DownloadFolderFileUtil {
         return null
     }
 
-    private fun getFileBeforeQ(context: Context, fileName: String): File? {
+    private fun getFileBeforeQ(fileName: String): File? {
 
-        return null
+        val file = File(downloadsDri, fileName)
+
+
+        return if (file.exists()) {
+            file
+        } else {
+            null
+        }
+
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     fun getQFileByFileName(context: Context, fileName: String): QFile? {
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return null
-        }
         var qFile: QFile? = null
         val queryUri = MediaStore.Downloads.EXTERNAL_CONTENT_URI
         val projection = arrayOf(id, displayName, relativePath)
@@ -170,7 +255,6 @@ object DownloadFolderFileUtil {
 
         var fileContent = ""
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-
             val qFile = getQFileByFileName(context, fileName)
             var inputStream: InputStream? = null
             var reader: BufferedReader? = null
@@ -179,7 +263,6 @@ object DownloadFolderFileUtil {
                     inputStream = context.contentResolver.openInputStream(uri)
                     reader = BufferedReader(InputStreamReader(inputStream, Charsets.UTF_8))
                     val stringBuffer = StringBuffer()
-
                     reader?.apply {
                         while (true) {
                             val line = readLine() ?: break
@@ -198,62 +281,31 @@ object DownloadFolderFileUtil {
 
         } else {
 
-            // TODO: 低版本获取文件
+            val file = getFileBeforeQ(fileName)
+            file?.apply {
+
+                var reader: BufferedReader? = null
+                try {
+                    reader = bufferedReader()
+                    val stringBuffer = StringBuffer()
+                    reader?.apply {
+                        while (true) {
+                            val line = readLine() ?: break
+                            stringBuffer.append(line)
+                            stringBuffer.append("\n")
+                        }
+                    }
+                    fileContent = stringBuffer.toString()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    reader?.close()
+                }
+            }
 
         }
 
         return fileContent
-    }
-
-
-    /**
-     * 更新文件内容,完全覆盖
-     * @param context Context
-     * @param fileName String
-     * @param newContent ByteArray
-     */
-    fun updateFile(context: Context, fileName: String, newContent: ByteArray): Boolean {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val qFile = getQFileByFileName(context, fileName)
-            qFile?.apply {
-                val outputStream = context.contentResolver.openOutputStream(uri, "wt")
-                try {
-                    outputStream?.apply {
-                        write(newContent)
-                        flush()
-                    }
-                    return true
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                } finally {
-                    outputStream?.close()
-                }
-            }
-
-        } else {
-            // TODO: 低版本
-        }
-
-
-        return false
-
-    }
-
-    fun delFile(context: Context, fileName: String): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-
-            val qFile = getQFileByFileName(context, fileName)
-            qFile?.apply {
-                context.contentResolver.delete(qFile.uri, null, null)
-                return true
-            }
-
-        } else {
-            // TODO: 低版本删除
-        }
-
-        return false
     }
 
 

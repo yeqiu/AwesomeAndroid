@@ -43,17 +43,6 @@ class AndroidQFileActivity : BaseBindActivity<ActivityAndroidQFileBinding>(), Vi
 
     private fun add() {
 
-
-        if (true){
-            val test = "李狗蛋123abc"
-            val encrypt = EncryptionUtils.encrypt(test)
-            log("encrypt = $encrypt")
-
-            val decrypt = EncryptionUtils.decrypt(encrypt)
-            log("decrypt = $decrypt")
-            return
-        }
-
         val context: Context = this
         val fileName = "example.txt"
         val fileContent = "Android白板注册方案\n" +
@@ -119,11 +108,6 @@ class AndroidQFileActivity : BaseBindActivity<ActivityAndroidQFileBinding>(), Vi
             val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
             val lastModified = file.lastModified()
-            val creationTime =
-                Files.readAttributes(Paths.get(file.absolutePath), BasicFileAttributes::class.java)
-                    .creationTime()
-
-            log("创建时间 = ${simpleDateFormat.format(creationTime.toMillis())}")
             log("修改时间时间 = ${simpleDateFormat.format(lastModified)}")
 
 
