@@ -20,6 +20,10 @@ class AndroidQFileActivity : BaseBindActivity<ActivityAndroidQFileBinding>(), Vi
         binding.btDel.setOnClickListener(this)
         binding.btGet.setOnClickListener(this)
 
+
+
+
+
     }
 
     override fun onClick(view: View?) {
@@ -38,6 +42,17 @@ class AndroidQFileActivity : BaseBindActivity<ActivityAndroidQFileBinding>(), Vi
 
 
     private fun add() {
+
+
+        if (true){
+            val test = "李狗蛋123abc"
+            val encrypt = EncryptionUtils.encrypt(test)
+            log("encrypt = $encrypt")
+
+            val decrypt = EncryptionUtils.decrypt(encrypt)
+            log("decrypt = $decrypt")
+            return
+        }
 
         val context: Context = this
         val fileName = "example.txt"

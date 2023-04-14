@@ -20,6 +20,7 @@ object DownloadFolderFileUtil {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private const val relativePath = MediaStore.Downloads.RELATIVE_PATH
+
     @RequiresApi(Build.VERSION_CODES.Q)
     private val downloadsUri = MediaStore.Downloads.EXTERNAL_CONTENT_URI
 
@@ -121,6 +122,7 @@ object DownloadFolderFileUtil {
         getQFileByFileName(context, fileName)?.apply {
             return file
         }
+
         return null
     }
 
