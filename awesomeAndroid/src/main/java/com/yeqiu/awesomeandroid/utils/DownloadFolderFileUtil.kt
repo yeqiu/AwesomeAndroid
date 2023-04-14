@@ -1,4 +1,4 @@
-package com.yeqiu.awesomeandroid
+package com.yeqiu.awesomeandroid.utils
 
 import android.content.ContentValues
 import android.content.Context
@@ -10,19 +10,13 @@ import android.webkit.MimeTypeMap
 import androidx.annotation.RequiresApi
 import java.io.*
 
-@RequiresApi(Build.VERSION_CODES.Q)
 object DownloadFolderFileUtil {
 
     private val downloadsFolderName = Environment.DIRECTORY_DOWNLOADS
     private const val displayName = MediaStore.Downloads.DISPLAY_NAME
     private const val id = MediaStore.Downloads._ID
     private const val mimeType = MediaStore.Downloads.MIME_TYPE
-    private val relativePath by lazy {
-        MediaStore.Downloads.RELATIVE_PATH
-    }
-    private val downloadsUri by lazy {
-        MediaStore.Downloads.EXTERNAL_CONTENT_URI
-    }
+
     private val downloadsDriPath by lazy {
         Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS
@@ -119,7 +113,7 @@ object DownloadFolderFileUtil {
         val fileList = arrayListOf<File>()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val queryUri = MediaStore.Downloads.EXTERNAL_CONTENT_URI
-            val projection = arrayOf(id, displayName, relativePath)
+            val projection = arrayOf(id, displayName, getRelativePath())
             val sortOrder = "${MediaStore.Downloads.DATE_MODIFIED} DESC"
             val cursor =
                 context.contentResolver.query(queryUri, projection, null, null, sortOrder)
@@ -142,7 +136,7 @@ object DownloadFolderFileUtil {
             if (file.isDirectory) {
                 val listFiles = file.listFiles()
                 listFiles?.apply {
-                    for (file in this){
+                    for (file in this) {
                         file?.let {
                             fileList.add(it)
                         }
@@ -163,12 +157,12 @@ object DownloadFolderFileUtil {
         val values = ContentValues().apply {
             put(displayName, fileName)
             put(mimeType, getMimeType(fileName))
-            put(relativePath, downloadsFolderName)
+            put(getRelativePath(), downloadsFolderName)
         }
         val resolver = context.contentResolver
 
         resolver.run {
-            var resultUri = insert(downloadsUri, values)
+            var resultUri = insert(getDownloadsUri(), values)
             resultUri?.let {
                 try {
                     openOutputStream(it)?.use { outputStream: OutputStream ->
@@ -264,7 +258,7 @@ object DownloadFolderFileUtil {
     fun getQFileByFileName(context: Context, fileName: String): QFile? {
         var qFile: QFile? = null
         val queryUri = MediaStore.Downloads.EXTERNAL_CONTENT_URI
-        val projection = arrayOf(id, displayName, relativePath)
+        val projection = arrayOf(id, displayName, getRelativePath())
         val selection = "$displayName = ?"
         val selectionArgs = arrayOf(fileName)
         val sortOrder = "${MediaStore.Downloads.DATE_MODIFIED} DESC"
@@ -343,6 +337,20 @@ object DownloadFolderFileUtil {
             }
         }
         return fileContent
+    }
+
+
+
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun getRelativePath(): String {
+        return MediaStore.Downloads.RELATIVE_PATH
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun getDownloadsUri(): Uri {
+        return MediaStore.Downloads.EXTERNAL_CONTENT_URI
     }
 
 

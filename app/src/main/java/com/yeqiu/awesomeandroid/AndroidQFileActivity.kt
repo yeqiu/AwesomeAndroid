@@ -2,13 +2,11 @@ package com.yeqiu.awesomeandroid
 
 import android.content.Context
 import android.view.View
-import com.yeqiu.awesomeandroid.DownloadFolderFileUtil.toByteArrayWithUtf8
 import com.yeqiu.awesomeandroid.databinding.ActivityAndroidQFileBinding
+import com.yeqiu.awesomeandroid.utils.DownloadFolderFileUtil
+import com.yeqiu.awesomeandroid.utils.DownloadFolderFileUtil.toByteArrayWithUtf8
 import com.yeqiu.common.BaseBindActivity
 import com.yeqiu.common.log
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.attribute.BasicFileAttributes
 import java.text.SimpleDateFormat
 
 
@@ -61,7 +59,7 @@ class AndroidQFileActivity : BaseBindActivity<ActivityAndroidQFileBinding>(), Vi
 
 
         val addFile =
-            DownloadFolderFileUtil.addFile(context, fileName, fileContent.toByteArrayWithUtf8())
+           DownloadFolderFileUtil.addFile(context, fileName, fileContent.toByteArrayWithUtf8())
 
         log("添加结果 = $addFile")
 
@@ -78,7 +76,7 @@ class AndroidQFileActivity : BaseBindActivity<ActivityAndroidQFileBinding>(), Vi
 //        FileUtils.updateTxtFileContent(context, fileName, fileContent)
 
         val updateFile =
-            DownloadFolderFileUtil.updateFile(context, fileName, fileContent.toByteArrayWithUtf8())
+          DownloadFolderFileUtil.updateFile(context, fileName, fileContent.toByteArrayWithUtf8())
         log("修改结果 = $updateFile")
 
     }
@@ -97,7 +95,7 @@ class AndroidQFileActivity : BaseBindActivity<ActivityAndroidQFileBinding>(), Vi
         val context: Context = this
         val fileName = "example.txt"
 //        val file = FileUtils.getDownloadedFile(context, fileName)
-        val file = DownloadFolderFileUtil.getFile(context, fileName)
+        val file = com.yeqiu.awesomeandroid.utils.DownloadFolderFileUtil.getFile(context, fileName)
         if (file != null) {
             // 处理文件对象
             log("成功获取文件：地址为 = ${file.absolutePath}")
@@ -108,7 +106,7 @@ class AndroidQFileActivity : BaseBindActivity<ActivityAndroidQFileBinding>(), Vi
             log("修改时间时间 = ${simpleDateFormat.format(lastModified)}")
 
 
-            val readFileToString = DownloadFolderFileUtil.getFileStr(context, fileName)
+            val readFileToString = com.yeqiu.awesomeandroid.utils.DownloadFolderFileUtil.getFileStr(context, fileName)
 
             log("文件内容为 = $readFileToString")
 

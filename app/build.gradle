@@ -48,6 +48,7 @@ dependencies {
     implementation cfg.dependencies.multidex
     implementation project(path: ':common')
     implementation project(path: ':screenRecorder')
+    implementation project(path: ':awesomeAndroid')
     //    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     testImplementation cfg.dependencies.junit
     androidTestImplementation cfg.dependencies.androidxJunit

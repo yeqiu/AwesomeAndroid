@@ -1,4 +1,4 @@
-package com.yeqiu.awesomeandroid
+package com.yeqiu.awesomeandroid.utils
 
 import android.util.Base64
 import java.security.SecureRandom
@@ -9,14 +9,18 @@ import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 
 
-object EncryptionUtils {
+object AESEncryptUtils {
 
     private const val TRANSFORMATION = "AES/ECB/PKCS5Padding"
     private const val SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA1"
     private const val SALT_LENGTH = 8
     private const val ITERATIONS = 1000
     private const val KEY_LENGTH = 256
-    private const val PASSWORD = "bszh"
+    private var PASSWORD = "bszh"
+
+    fun setPassword(password: String) {
+        PASSWORD = password
+    }
 
 
     fun encrypt(input: String): String {
