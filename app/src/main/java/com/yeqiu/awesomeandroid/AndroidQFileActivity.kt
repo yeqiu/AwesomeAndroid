@@ -2,7 +2,7 @@ package com.yeqiu.awesomeandroid
 
 import android.content.Context
 import android.view.View
-import com.yeqiu.awesomeandroid.databinding.ActivityAndroidQFileBinding
+import com.yeqiu.awesomeandroid.app.databinding.ActivityAndroidQFileBinding
 import com.yeqiu.awesomeandroid.utils.DownloadFolderFileUtil
 import com.yeqiu.awesomeandroid.utils.DownloadFolderFileUtil.toByteArrayWithUtf8
 import com.yeqiu.common.BaseBindActivity
@@ -21,6 +21,8 @@ class AndroidQFileActivity : BaseBindActivity<ActivityAndroidQFileBinding>(), Vi
 
     }
 
+
+
     override fun onClick(view: View?) {
         view?.let {
             if (view == binding.btAdd) {
@@ -36,7 +38,9 @@ class AndroidQFileActivity : BaseBindActivity<ActivityAndroidQFileBinding>(), Vi
     }
 
 
+
     private fun add() {
+
 
         val context: Context = this
         val fileName = "example.txt"
@@ -64,6 +68,7 @@ class AndroidQFileActivity : BaseBindActivity<ActivityAndroidQFileBinding>(), Vi
         log("添加结果 = $addFile")
 
     }
+
 
     private fun edit() {
 

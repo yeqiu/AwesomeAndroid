@@ -11,7 +11,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
 import androidx.annotation.RequiresApi
-import com.yeqiu.awesomeandroid.databinding.ActivityMainBinding
+import com.yeqiu.awesomeandroid.app.databinding.ActivityMainBinding
 import com.yeqiu.common.BaseBindActivity
 import com.yeqiu.common.log
 import com.yeqiu.common.toast
@@ -28,7 +28,8 @@ class MainActivity : BaseBindActivity<ActivityMainBinding>(), View.OnClickListen
     override fun init() {
 
 
-        startActivity(Intent(this, AndroidQFileActivity::class.java))
+//        startActivity(Intent(this, AndroidQFileActivity::class.java))
+        startActivity(Intent(this, GetActivity::class.java))
 
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
