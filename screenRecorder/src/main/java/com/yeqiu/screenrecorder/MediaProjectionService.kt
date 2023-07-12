@@ -140,7 +140,7 @@ class MediaProjectionService : Service() {
             mediaRecorder.setOnErrorListener { _, _, _ ->
                 log("录屏服务发生错误")
                 ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
-                    .onError(OnScreenRecordCallBack.actionVideo, "录屏服务发生错误")
+                    ?.onError(OnScreenRecordCallBack.actionVideo, "录屏服务发生错误")
             }
             mediaRecorder.prepare()
 
@@ -215,7 +215,7 @@ class MediaProjectionService : Service() {
 
         if (image == null) {
             ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
-                .onError(OnScreenRecordCallBack.actionImage, "截屏失败")
+                ?.onError(OnScreenRecordCallBack.actionImage, "截屏失败")
             return
         }
 
@@ -249,13 +249,13 @@ class MediaProjectionService : Service() {
             bitmap.compress(Bitmap.CompressFormat.WEBP, 100, fileOutputStream)
             fileOutputStream.flush()
             ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
-                .onScreenshotResult(file)
+                ?.onScreenshotResult(file)
             ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
-                .onScreenshotResult(file)
+                ?.onScreenshotResult(file)
         } catch (exception: Exception) {
             exception.printStackTrace()
             ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
-                .onError(OnScreenRecordCallBack.actionImage, "保存截图失败")
+                ?.onError(OnScreenRecordCallBack.actionImage, "保存截图失败")
         } finally {
             //恢复状态
             updateStatus(ScreenRecorderHelper.ScreenRecordingStatus.Prepare)
@@ -269,7 +269,7 @@ class MediaProjectionService : Service() {
             .setStatus(status)
         //回调状态
         ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
-            .onRecordingStatusChange(status)
+            ?.onRecordingStatusChange(status)
     }
 
     fun stopRecording() {
@@ -280,7 +280,7 @@ class MediaProjectionService : Service() {
         }
         updateStatus(ScreenRecorderHelper.ScreenRecordingStatus.Prepare)
         ScreenRecorderHelper.getInstance().getOnScreenRecordingCallBack()
-            .onRecordingStatusResult(mediaFile)
+            ?.onRecordingResult(mediaFile)
     }
 
 

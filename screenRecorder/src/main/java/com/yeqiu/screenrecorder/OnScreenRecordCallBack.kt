@@ -2,7 +2,7 @@ package com.yeqiu.screenrecorder
 
 import java.io.File
 
-open class OnScreenRecordCallBack {
+interface OnScreenRecordCallBack {
 
     companion object {
         const val actionVideo: Int = 1
@@ -10,25 +10,30 @@ open class OnScreenRecordCallBack {
     }
 
 
-    open fun onRecordingStatusChange(status: ScreenRecorderHelper.ScreenRecordingStatus) {
+    /**
+     * 录屏服务状态回调
+     * @param status ScreenRecordingStatus
+     */
+    fun onRecordingStatusChange(status: ScreenRecorderHelper.ScreenRecordingStatus)
 
+    /**
+     * 错误回调
+     * @param actionType Int
+     * @param msg String
+     */
+    fun onError(actionType: Int, msg: String)
 
-    }
+    /**
+     * 截屏回调
+     * @param file File
+     */
+    fun onScreenshotResult(file: File)
 
-
-    open fun onError(actionType: Int, msg: String) {
-
-    }
-
-
-    open fun onScreenshotResult(file: File) {
-
-    }
-
-
-    open fun onRecordingStatusResult(file: File) {
-
-    }
+    /**
+     * 录屏文件回调
+     * @param file File
+     */
+    fun onRecordingResult(file: File)
 
 
 }

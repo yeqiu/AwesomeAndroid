@@ -1,17 +1,16 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
 }
 
 def cfg = rootProject.ext
 
 android {
-
-    namespace cfg.applicationid.app
+    namespace cfg.applicationid.board
     compileSdk cfg.android.compileSdk
 
+
     defaultConfig {
-        applicationId cfg.applicationid.app
         minSdk cfg.android.minSdk
         targetSdk cfg.android.targetSdk
         versionCode cfg.android.versionCode
@@ -26,6 +25,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -36,23 +38,27 @@ android {
     viewBinding {
         enabled = cfg.android.viewBinding
     }
+
+    //生成jar包
+    task exportJar(type: Copy) {
+        delete 'build/outputs/libs/screenRecordingHelper.jar'
+        from('build/intermediates/compile_library_classes_jar/release/') //jar文件来源
+        into('build/outputs/libs/') //生成路径
+        include('classes.jar')
+        rename('classes.jar', 'screenRecordingHelper.jar') //命名
+    }
+    exportJar.dependsOn(build)
+
 }
 
 dependencies {
 
     implementation cfg.dependencies.androidxAppcompat
     implementation cfg.dependencies.ktx
-    implementation cfg.dependencies.material
-    implementation cfg.dependencies.constraintlayout
-    implementation cfg.dependencies.splashscreen
-    implementation cfg.dependencies.multidex
-    implementation project(path: ':common')
-    implementation project(path: ':screenRecorder')
-    implementation project(path: ':awesomeAndroid')
-    implementation project(path: ':board')
-    //    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     testImplementation cfg.dependencies.junit
     androidTestImplementation cfg.dependencies.androidxJunit
     androidTestImplementation cfg.dependencies.espresso
 
+    implementation project(path: ':awesomeAndroid')
 }
+

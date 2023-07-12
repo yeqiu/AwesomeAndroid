@@ -17,23 +17,24 @@ ext {
 
     //model id
     applicationid = [
-            app: "com.yeqiu.awesomeandroid.app",
-            common: "com.yeqiu.common",
+            app            : "com.yeqiu.awesomeandroid.app",
+            common         : "com.yeqiu.common",
             screenrecording: "com.yeqiu.screenrecording",
-            awesomeandroid: "com.yeqiu.awesomeandroid",
+            board          : "com.yeqiu.board",
+            awesomeandroid : "com.yeqiu.awesomeandroid",
     ]
 
     //官方依赖
     dependencies = [
-            "androidxAppcompat"       : 'androidx.appcompat:appcompat:1.6.1',
-            "material"        : 'com.google.android.material:material:1.8.0',
-            "constraintlayout": 'androidx.constraintlayout:constraintlayout:2.1.4',
-            "multidex"        : 'androidx.multidex:multidex:2.0.1',
-            "splashscreen"    : 'androidx.core:core-splashscreen:1.0.0-alpha02',
-            "ktx"             : 'androidx.core:core-ktx:1.9.0',
-            "junit"           : 'junit:junit:4.13.2',
-            "androidxJunit"   : 'androidx.test.ext:junit:1.1.3',
-            "espresso"        : 'androidx.test.espresso:espresso-core:3.4.0',
+            "androidxAppcompat": 'androidx.appcompat:appcompat:1.6.1',
+            "material"         : 'com.google.android.material:material:1.8.0',
+            "constraintlayout" : 'androidx.constraintlayout:constraintlayout:2.1.4',
+            "multidex"         : 'androidx.multidex:multidex:2.0.1',
+            "splashscreen"     : 'androidx.core:core-splashscreen:1.0.0-alpha02',
+            "ktx"              : 'androidx.core:core-ktx:1.9.0',
+            "junit"            : 'junit:junit:4.13.2',
+            "androidxJunit"    : 'androidx.test.ext:junit:1.1.3',
+            "espresso"         : 'androidx.test.espresso:espresso-core:3.4.0',
     ]
 
     //三方依赖

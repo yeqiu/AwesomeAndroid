@@ -236,15 +236,12 @@ object DownloadFolderFileUtil {
         getQFileByFileName(context, fileName)?.apply {
             return file
         }
-
         return null
     }
 
     private fun getFileBeforeQ(fileName: String): File? {
 
         val file = File(downloadsDriPath, fileName)
-
-
         return if (file.exists()) {
             file
         } else {
@@ -281,6 +278,19 @@ object DownloadFolderFileUtil {
             cursor.close()
         }
         return qFile
+    }
+
+
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun getRelativePath(): String {
+        return MediaStore.Downloads.RELATIVE_PATH
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun getDownloadsUri(): Uri {
+        return MediaStore.Downloads.EXTERNAL_CONTENT_URI
     }
 
 
@@ -337,20 +347,6 @@ object DownloadFolderFileUtil {
             }
         }
         return fileContent
-    }
-
-
-
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun getRelativePath(): String {
-        return MediaStore.Downloads.RELATIVE_PATH
-    }
-
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun getDownloadsUri(): Uri {
-        return MediaStore.Downloads.EXTERNAL_CONTENT_URI
     }
 
 

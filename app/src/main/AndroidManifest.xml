@@ -32,6 +32,8 @@
         </activity>
         <activity android:name="com.yeqiu.awesomeandroid.AndroidQFileActivity" />
         <activity android:name="com.yeqiu.awesomeandroid.GetActivity" />
+        <activity android:name="com.yeqiu.awesomeandroid.ScreenRecordingActivity" />
+        <activity android:name="com.yeqiu.awesomeandroid.BoardActivity" />
     </application>
 
 </manifest>

@@ -27,7 +27,7 @@ class ScreenRecorderHelper {
     private lateinit var recordingPermissionLauncher: ActivityResultLauncher<Intent>
     private lateinit var mediaProjectionService: MediaProjectionService
     private lateinit var displayMetrics: DisplayMetrics
-    private lateinit var onScreenRecordCallBack: OnScreenRecordCallBack
+    private var onScreenRecordCallBack: OnScreenRecordCallBack? = null
     private var enableScreenCapture: Boolean = false
 
 
@@ -70,14 +70,9 @@ class ScreenRecorderHelper {
         this@ScreenRecorderHelper.status = status
     }
 
-    internal fun getOnScreenRecordingCallBack(): OnScreenRecordCallBack {
+    internal fun getOnScreenRecordingCallBack(): OnScreenRecordCallBack? {
 
-        return if (::onScreenRecordCallBack.isInitialized) {
-            onScreenRecordCallBack
-        } else {
-            object : OnScreenRecordCallBack() {
-            }
-        }
+        return onScreenRecordCallBack
     }
 
     internal fun getEnableScreenCapture() = enableScreenCapture
@@ -98,7 +93,7 @@ class ScreenRecorderHelper {
         activity.windowManager.defaultDisplay.getRealMetrics(displayMetrics)
     }
 
-    fun setNotification(notification: Notification){
+    fun setNotification(notification: Notification) {
 
         NotificationHelper.setNotification(notification)
 
